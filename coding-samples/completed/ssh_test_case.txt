@@ -1,0 +1,106 @@
+Test Case: Verify SSH Connectivity Using Password and Key-Based Authentication
+
+Test Case ID: TC_SSH_001
+
+Objective: Ensure that SSH connectivity to a remote server is functional using both password-based and key-based authentication methods.
+
+Preconditions:
+
+    The SSH server is installed and running on the target machine (e.g., OpenSSH).
+    The SSH server allows both password and key-based authentication.
+    The client machine has SSH installed (e.g., OpenSSH Client).
+    A user account with appropriate permissions exists on the target machine.
+    SSH key pairs (public and private) are generated on the client machine.
+    The public key is added to the ~/.ssh/authorized_keys file on the target machine.
+
+Test Environment:
+
+    Client Machine: Ubuntu 22.04 LTS
+    Server Machine: Ubuntu 22.04 LTS
+    SSH Server IP: 192.168.1.100
+    SSH Username: testuser
+    Client SSH Key Path: ~/.ssh/id_rsa
+    Server SSH Port: 22
+
+Test Steps:
+
+    Verify Password-Based SSH Authentication:
+        Step 1.1: On the client machine, initiate an SSH connection to the server using the password:
+
+        bash
+
+    ssh testuser@192.168.1.100
+
+    Step 1.2: Enter the password when prompted.
+    Expected Result: The user should successfully log into the server.
+
+Verify Key-Based SSH Authentication:
+
+    Step 2.1: On the client machine, initiate an SSH connection to the server using the SSH key:
+
+    bash
+
+    ssh -i ~/.ssh/id_rsa testuser@192.168.1.100
+
+    Step 2.2: Ensure no password prompt appears, indicating the key is being used for authentication.
+    Expected Result: The user should successfully log into the server without needing to enter a password.
+
+Verify Denial of SSH Access with an Incorrect Password:
+
+    Step 3.1: On the client machine, initiate an SSH connection to the server using an incorrect password:
+
+    bash
+
+    ssh testuser@192.168.1.100
+
+    Step 3.2: Enter an incorrect password when prompted.
+    Expected Result: The SSH connection should be denied.
+
+Verify Denial of SSH Access with an Incorrect Key:
+
+    Step 4.1: Temporarily replace the private key on the client machine with an invalid or incorrect key.
+    Step 4.2: Attempt to initiate an SSH connection using the incorrect key:
+
+    bash
+
+    ssh -i ~/.ssh/invalid_id_rsa testuser@192.168.1.100
+
+    Expected Result: The SSH connection should be denied.
+
+Verify SSH Access is Denied When Both Methods Fail:
+
+    Step 5.1: Disable the correct SSH key on the server by temporarily renaming the authorized_keys file:
+
+    bash
+
+mv ~/.ssh/authorized_keys ~/.ssh/authorized_keys.bak
+
+Step 5.2: On the client machine, attempt to connect using the key:
+
+bash
+
+        ssh -i ~/.ssh/id_rsa testuser@192.168.1.100
+
+        Step 5.3: Enter an incorrect password when prompted.
+        Expected Result: The SSH connection should be denied as both key-based and password-based authentication fail.
+
+Postconditions:
+
+    Restore the authorized_keys file on the server if modified.
+
+    bash
+
+    mv ~/.ssh/authorized_keys.bak ~/.ssh/authorized_keys
+
+    Ensure the client machine is logged out of the server.
+
+Expected Outcome:
+
+    SSH connectivity should function correctly with both password-based and key-based authentication methods.
+    The server should reject incorrect passwords and invalid keys.
+    If both methods fail, the SSH connection should be denied.
+
+Comments:
+
+    This test ensures secure SSH access by verifying both authentication methods and handling failure scenarios appropriately.
+    Consider automating this test using a scripting language like Python or Bash for more comprehensive testing.
